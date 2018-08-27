@@ -20,9 +20,9 @@ public class Menu {
     boolean empty = false, storageCreated = false, storaged = false, deleted = false;
     String typeProduct = "";
     public Storage[] inventary = new Storage[9];
-    Product[] currentProduct = new Product[100];
+    Product[] currentProduct, medianProducts = new Product[100];
     
-    public int pointer(int noStorage){
+    int pointer(int noStorage){
     int count = 0;
     for(Storage s: inventary){
         if(!(s==null)){
@@ -38,14 +38,15 @@ public class Menu {
         return count;
     } 
     
-    public void errorMenu(String messagge, int type){
+    void errorMenu(String messagge, int type){
         System.out.println("*****Hubo un error en la ejecucion de la orden*****");
         System.out.println("*****"+messagge+"*****");
+        System.out.println("*****Pulse 0 para continuar con la ejecucion del programa*****");
         reader.next();
         optionMenu(type);
         
     }
-    public void optionMenu(int i){
+    void optionMenu(int i){
       System.out.println("Desea realizar otra accion?"); 
       System.out.println("1. Si"); 
       System.out.println("2. No"); 
@@ -73,7 +74,7 @@ public class Menu {
               errorMenu("Ingrese una opción válida", 2);
       }
     }
-    public void mainMenu(){
+    void mainMenu(){
         System.out.println("Bienvenido al programa de gestión de inventarios");
         System.out.println("Por favor ingrese el numero de productos del tipo ♠ que desea manejar");
         try{product1 = reader.nextInt();}catch(Exception e){errorMenu("No se puede ingresar letras",2);}   
@@ -89,7 +90,7 @@ public class Menu {
         secundaryMenu();
     }
     
-    public void createStorage(){
+    void createStorage(){
         for(int i = 1; i<=9; i++){
         Product[] product = new Product[100];
         Storage storage = new Storage(i, "Bodega " + i, product);
@@ -99,7 +100,7 @@ public class Menu {
     }
     
     
-    public void secundaryMenu(){ 
+    void secundaryMenu(){ 
        System.out.println("Bienvenido al programa de gestión de inventarios");
        System.out.println("Por favor ingrese el numero de la opcion que desea realizar");
        System.out.println("1. Inventario");
@@ -127,7 +128,7 @@ public class Menu {
        }
     }  
     
-    public void menuInventory(){
+    void menuInventory(){
        decision = 0;
        System.out.println("Bienvenido al sistema de gestion de inventarios");
        System.out.println("Usted se encuentra en la Bodega "+ noStorage);
@@ -216,7 +217,7 @@ public class Menu {
         } 
     }
     
-    public void menuReport(){
+    void menuReport(){
         System.out.println("Bienvenido al sistema de gestion de reportes");
         System.out.println("Por favor ingrese el numero de la opcion que desea realizar");
         System.out.println("1. Ver el inventario de todas las bodegas");
@@ -226,14 +227,14 @@ public class Menu {
         System.out.println("5. Ver la bodega con mayor cantidad de productos (separadas por cada articulo)");
         System.out.println("6. Promedio de articulos por bodega");
         System.out.println("7. Mediana de unidades por articulo");
-        System.out.println("8. Moda de unidades por articulo");
-        System.out.println("9. Cantidad de todos productos que no están en bodega.");
-        System.out.println("10. Menu anterior");
-        System.out.println("11. Salir");
+        System.out.println("8. Cantidad de todos productos que no están en bodega.");
+        System.out.println("9. Menu anterior");
+        System.out.println("10. Salir");
         try{decision = reader.nextInt();}catch(Exception e){errorMenu("No se puede ingresar letras", 3);}
         switch(decision){
             case 1:
                 inventary();
+                optionMenu(4);
                 break;
             case 2:
                 Storage smaller = smallerStorage();
@@ -261,16 +262,16 @@ public class Menu {
                 if(!(pointer(unitySmaller.getId()) == 0)){
                     for(Product p: unitySmaller.getStorage()){
                         if(!(p==null)){
-                            if(p.getSymbol()=="♠"){
+                            if(p.getSymbol().equals("♠")){
                                 type1 +=1;
                             }
-                            if(p.getSymbol()=="♦"){
+                            if(p.getSymbol().equals("♦")){
                                 type2 += 1;
                             }
-                            if(p.getSymbol()=="►"){
+                            if(p.getSymbol().equals("►")){
                                 type3 += 1;
                             }
-                            if(p.getSymbol()=="♣"){
+                            if(p.getSymbol().equals("♣")){
                                 type4 += 1;
                             }
                         }
@@ -286,38 +287,86 @@ public class Menu {
                    optionMenu(4);
                 }else{
                     errorMenu("Inventario Vacio", 3);
-                } 
-                
+                }
                 break;
             case 5:
+                int btype1 = 0, btype2=0, btype3 = 0, btype4=0;
+                Storage unityBigger = biggerStorage();
+                if(!(pointer(unityBigger.getId()) == 0)){
+                    for(Product p: unityBigger.getStorage()){
+                        if(!(p==null)){
+                            if(p.getSymbol().equals("♠")){
+                                btype1 +=1;
+                            }
+                            if(p.getSymbol().equals("♦")){
+                                btype2 += 1;
+                            }
+                            if(p.getSymbol().equals("►")){
+                                btype3 += 1;
+                            }
+                            if(p.getSymbol().equals("♣")){
+                                btype4 += 1;
+                            }
+                        }
+                    }
+                    System.out.println("El articulo ♠ tiene "+btype1+" unidades en la "
+                            +unityBigger.getStorageName());
+                    System.out.println("El articulo ♦ tiene "+btype2+" unidades en la "
+                            +unityBigger.getStorageName());
+                    System.out.println("El articulo ► tiene "+btype3+" unidades en la "
+                            +unityBigger.getStorageName());
+                    System.out.println("El articulo ♣ tiene "+btype4+" unidades en la "
+                            +unityBigger.getStorageName());
+                   optionMenu(4);
+                }else{
+                    errorMenu("Inventario Vacio", 3);
+                } 
                 break;
             case 6:
+                System.out.println("Promedio de artículos por bodega "+average());
+                optionMenu(4);
                 break;
             case 7:
+                int suma = 0;
+                System.out.println("Mediana de unidades por articulo");
+                System.out.println("Cantidad de articulos que no están en bodega");
+                suma = product1 + numberProducts("♠");
+                System.out.println("Mediana para el producto de tipo ♠: "+median(suma));
+                suma = product2 + numberProducts("♦");
+                System.out.println("Mediana para el producto de tipo ♦: "+median(suma));
+                suma = product3 + numberProducts("►");
+                System.out.println("Mediana para el producto de tipo ►: "+median(suma));
+                suma = product4 + numberProducts("♣");
+                System.out.println("Mediana para el producto de tipo ♣: "+median(suma));
+                optionMenu(4); 
                 break;
             case 8:
+                System.out.println("Cantidad de articulos que no están en bodega");
+                System.out.println("Inventario para el producto de tipo ♠: "+product1);
+                System.out.println("Inventario para el producto de tipo ♦: "+product2);
+                System.out.println("Inventario para el producto de tipo ►: "+product3);
+                System.out.println("Inventario para el producto de tipo ♣: "+product4);
+                optionMenu(4);
                 break;
             case 9:
+                secundaryMenu();
                 break;
-            case 10:
-                break;
-            case 11:
-                break;
-            case 12:
+            case 10:               
+                System.exit(0);
                 break;
             default:
         
         }
     
     }
-    public void seeStorage(){
+    void seeStorage(){
         for(Storage s: inventary){
             if(s.getId() == noStorage){
                 empty = printStorage(s.getStorage());
             }
         }
     }
-    public boolean existStorage(int Storage){
+    boolean existStorage(int Storage){
         boolean exists = false;
         for(Storage s: inventary){
             if(s.getId() == noStorage){
@@ -326,7 +375,7 @@ public class Menu {
         }
         return exists;
     }
-    public boolean existId(int id){
+    boolean existId(int id){
         boolean exists = false;
         for(Storage s: inventary){
             if(s.getId() == noStorage){
@@ -342,7 +391,7 @@ public class Menu {
         }
         return exists;
     }
-    public boolean printStorage(Product[] products){
+    boolean printStorage(Product[] products){
         boolean em =false;
         if(pointer(noStorage) == 0){
             em = true;
@@ -359,7 +408,7 @@ public class Menu {
         }
         return em;
     }
-    public void addProduct(int noStorage, String typeProduct, int cantidad){
+    void addProduct(int noStorage, String typeProduct, int cantidad){
         if(cantidad<=100){
             switch(typeProduct){
             case "♠":
@@ -369,17 +418,17 @@ public class Menu {
                 break;
             case "♦":
                 if(!(cantidad>product2)){
-                    product1 -= cantidad;
+                    product2 -= cantidad;
                 }else{errorMenu("El inventario es insufienciente",1);}
                 break;
             case "►":
                 if(!(cantidad>product3)){
-                    product1 -= cantidad;
+                    product3 -= cantidad;
                 }else{errorMenu("El inventario es insufienciente",1);}
                 break;
             case "♣":
                 if(!(cantidad>product4)){
-                    product1 -= cantidad;
+                    product4 -= cantidad;
                 }else{errorMenu("El inventario es insufienciente",1);}
                 break;     
             }
@@ -388,14 +437,14 @@ public class Menu {
                     for(int i = 0; i<cantidad; i++){
                         currentProduct = s.getStorage();
                         Product pr = new Product(pointer(noStorage) +1, typeProduct, noStorage);
-                        try{currentProduct[pointer(noStorage)] = pr;}catch(Exception e){errorMenu("Ya no se pueden"
+                        try{currentProduct[pointer(noStorage)] = pr;}catch(Exception e){errorMenu("Ya no se pueden "
                                 + "ingresar mas productos a la bodega",1);}
                     }
                 }
             }   
         }else{errorMenu("No puede ingresar mas de 100 productos a la bodega",1);}
     } 
-    public void deleteProduct(int id){
+    void deleteProduct(int id){
         for(Storage s: inventary){
             if(s.getId() == noStorage){
                 currentProduct = s.getStorage();
@@ -419,7 +468,7 @@ public class Menu {
             }
         }
     }
-    public void transferProduct(int id, int storage){
+    void transferProduct(int id, int storage){
         for(Storage s: inventary){
             if(s.getId() == noStorage){
                 for(Product p: s.getStorage()){
@@ -433,18 +482,18 @@ public class Menu {
             }
         }
     }
-     void inventary(){
+    void inventary(){
+         String cadena = "";
         for(Storage s: inventary){
             for(Product p: s.getStorage()){
                 if(!(p==null)){
                     if(s.getId() == p.getNoStorage()){
-                        String cadena = "";
                         cadena += p.getSymbol();
-                        System.out.printf("%-20s%-20s%-20s\n","Bodega "
-                                + noStorage, cadena);
                     }
                 }
             }
+            System.out.println("Bodega " +s.getId() + ": " + cadena);
+            cadena = "";
         }
     }
     Storage biggerStorage(){
@@ -467,4 +516,34 @@ public class Menu {
         }
         return st;
     }
+    int average(){
+        int size = 0;
+        for(Storage s: inventary){
+            size += pointer(s.getId());    
+        }
+        return (size)/9;
+    }
+    int median(int calc){
+        int median = 0;
+        if(calc % 2 == 0){
+            median = (calc / 2) + 1;
+        }else{
+         median = (calc / 2);
+        }
+        return median;
+    }
+    int numberProducts(String symbol){
+        int number = 0;
+        for(Storage s: inventary){
+            for(Product p: s.getStorage()){
+                if(!(p==null)){
+                    if(p.getSymbol().equals(symbol)){
+                        number += 1;
+                    }
+                }
+            }          
+        }
+        return number;
+    }
+    
 }
